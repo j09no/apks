@@ -1,0 +1,971 @@
+STATIC APK JAANCH · ALAG TEST-COPY EXPERIMENT
+
+Chess 2.10.2 mein PairIP:
+code kya dikhata hai?
+
+Verification se license screen tak har nazar aane wala rasta. Kisi bhi node par click karke asli DEX instructions dekhein. Native boundary ko guess se nahi bhara gaya hai.
+
+com.splendapps.checkmate · v2.10.2 (245) · SHA-256 8e8a91cd394fb24120cf…
+
+Sample caveat: original signer CN=Local unranked study build hai, official Play APK hone ka proof nahi. Doosra targeted test build: native startup preserved; archive, DEX aur APK signature checks pass. Runtime launch/game test abhi baaki hai. Pehla manifest experiment alag hai; CRC-script output invalid tha.
+
+Flow aur evidenceNateeje aur seemaayeinManifest entrypoints
+
+DEX / XML mein seedha sabootNative ya unresolved boundaryAPK execute nahi ki gayi · Original untouched
+
+ANDROID ENTRYPOINTManifest se app shuruPackage aur actual version: 2.10.2 / 245
+
+Superclass load ka alag startup raasta⇣
+
+SUPERCLASS INITIALIZATIONHilt se native startup bhi chalta haiSirf manifest swap se yeh route nahi hatta
+
+Native/class initialization ke baad attach branch↓
+
+APPLICATION.ATTACHBASECONTEXTAPK signer ki SHA-256 jaanchPhir LicenseClient.checkLicense(context)
+
+License initialization: optional condition↓
+
+OPTIONAL LOCAL BRANCHInstaller check hai, default OFF hailocalCheckEnabled=false · background service=false
+
+Main service: default visible branch↓
+
+GOOGLE PLAY IPCLicensing service ko requestIntent package com.android.vending · transaction 2
+
+Service callback se actual decision branch↓
+
+PROCESSRESPONSE(INT, BUNDLE)0 = license · 2 = paywall · 3 = errorSuccess par bhi RS256 aur packageName verify
+
+Sirf response2 ki paywall shaakha↓
+
+STATUS 2 BRANCHPendingIntent send, phir app closePlay Store ka final screen/URI unknown
+
+Vikalp shaakha: upar wale paywall ka agla step nahi↓
+
+VIKALP: IPC / PAYLOAD ERRORSomething went wrong dialogRetry 3× · 1000ms · conditional shutdown 30000ms
+
+Alag experiment; execution flow ka hissa nahi⇣
+
+ALAG TEST COPY · ORIGINAL PRESERVEDRepo method: experiment ka nateejaSignature validity ≠ runtime bypass success
+
+Doosra independent experiment, execution step nahi⇣
+
+DOOSRA BUILD · ORIGINAL STARTUP PRESERVEDTargeted enforcement test: runtime untestedSirf classes2.dex changed; native, assets, resources preserved
+
+Map par wapasSEEDHA STATIC SABOOT
+
+Manifest se app shuru
+
+Launcher MainActivity hai; Application PairIP wrapper hai. LicenseActivity internal hai, externally exported nahi.
+
+manifest.xml:1,55,58,292,294
+
+versionName="2.10.2" versionCode="245" package="com.splendapps.checkmate" application name="com.pairip.application.Application" MainActivity exported="true" + MAIN / LAUNCHER LicenseActivity exported="false" uses-permission="com.android.vending.CHECK_LICENSE"
+
+Naam Chess_2.10.apk hone se version 2.10 prove nahi hota. Is sample ka version 2.10.2 hai.
+
+Is node ke baare mein poochhein
+
+Har code offset hexadecimal byte offset hai, method ke shuru se. Static reachability actual device behavior ki guarantee nahi hai.
+
+wapasNATIVE / UNRESOLVED
+Hilt se native startup bhi chalta hai
+PairIP wrapper ka superclass CheckmateApp hai; uska superclass Hilt_CheckmateApp hai. Hilt static initializer StartupLauncher bulata hai. VMRunner pairipcore load karke native executeVM tak jata hai.
+
+classes4.dex: Lcom/splendapps/checkmate/app/Hilt_CheckmateApp;-><clinit>()V
+  0000: invoke-static                Lcom/pairip/StartupLauncher;->launch()V
+  0006: return-void                  
+classes2.dex: Lcom/pairip/StartupLauncher;->launch()V
+  0000: const-class                  v0, Lcom/pairip/StartupLauncher;
+  0004: monitor-enter                v0
+  0006: sget-boolean                 v1, Lcom/pairip/StartupLauncher;->launchCalled Z
+  000a: if-eqz                       v1, +004h
+  000e: monitor-exit                 v0
+  0010: return-void                  
+  0012: const/4                      v1, 1
+  0014: sput-boolean                 v1, Lcom/pairip/StartupLauncher;->launchCalled Z
+  0018: sget-object                  v1, Lcom/pairip/StartupLauncher;->startupProgramName Ljava/lang/String;
+  001c: const/4                      v2, 0
+  001e: invoke-static                v1, v2, Lcom/pairip/VMRunner;->invoke(Ljava/lang/String; [Ljava/lang/Object;)Ljava/lang/Object;
+  0024: monitor-exit                 v0
+  0026: return-void                  
+  0028: move-exception               v1
+  002a: monitor-exit                 v0
+  002c: throw                        v1
+classes2.dex: Lcom/pairip/VMRunner;-><clinit>()V
+  0000: const-string                 v0, "pairipcore"
+  0004: invoke-static                v0, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+  000a: return-void                  
+classes2.dex: Lcom/pairip/VMRunner;->executeVM([B [Ljava/lang/Object;)Ljava/lang/Object;
+  [no code]
+Native VM instructions aur unke hidden checks reconstruct nahi hue. Is node ki amber boundary ka matlab unknown hai, bypass success nahi.
+
+Is node ke baare mein poochhein
+wapasSEEDHA STATIC SABOOT
+APK signer ki SHA-256 jaanch
+attachBaseContext pehle context set karta hai, phir signature verify, phir license check. Signature reject ho to exception throw hoti hai.
+
+classes2.dex: Lcom/pairip/application/Application;->attachBaseContext(Landroid/content/Context;)V
+  0000: invoke-static                v1, Lcom/pairip/VMRunner;->setContext(Landroid/content/Context;)V
+  0006: invoke-static                v1, Lcom/pairip/SignatureCheck;->verifyIntegrity(Landroid/content/Context;)V
+  000c: invoke-static                v1, Lcom/pairip/licensecheck/LicenseClient;->checkLicense(Landroid/content/Context;)V
+  0012: invoke-super                 v0, v1, Lcom/pairip/application/Application;->attachBaseContext(Landroid/content/Context;)V
+  0018: return-void                  
+classes2.dex: Lcom/pairip/SignatureCheck;->verifyIntegrity(Landroid/content/Context;)V
+  0000: invoke-virtual               v2, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
+  0006: move-result-object           v0
+  0008: invoke-virtual               v2, Landroid/content/Context;->getPackageName()Ljava/lang/String;
+  000e: move-result-object           v2
+  0010: const/16                     v1, 64
+  0014: invoke-virtual               v0, v2, v1, Landroid/content/pm/PackageManager;->getPackageInfo(Ljava/lang/String; I)Landroid/content/pm/PackageInfo;
+  001a: move-result-object           v2
+  001c: const-string                 v0, "SHA-256"
+  0020: invoke-static                v0, Ljava/security/MessageDigest;->getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;
+  0026: move-result-object           v0
+  0028: iget-object                  v2, v2, Landroid/content/pm/PackageInfo;->signatures [Landroid/content/pm/Signature;
+  002c: const/4                      v1, 0
+  002e: aget-object                  v2, v2, v1
+  0032: invoke-virtual               v2, Landroid/content/pm/Signature;->toByteArray()[B
+  0038: move-result-object           v2
+  003a: invoke-virtual               v0, v2, Ljava/security/MessageDigest;->digest([B)[B
+  0040: move-result-object           v2
+  0042: const/4                      v0, 2
+  0044: invoke-static                v2, v0, Landroid/util/Base64;->encodeToString([B I)Ljava/lang/String;
+  004a: move-result-object           v2
+  004c: goto                         +2h
+  004e: const/4                      v2, 0
+  0050: invoke-static                v2, Lcom/pairip/SignatureCheck;->verifySignatureMatches(Ljava/lang/String;)Z
+  0056: move-result                  v0
+  0058: if-nez                       v0, +01bh
+  005c: sget-object                  v0, Lcom/pairip/SignatureCheck;->expectedTestSignature Ljava/lang/String;
+  0060: invoke-virtual               v0, v2, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+  0066: move-result                  v0
+  0068: if-nez                       v0, +013h
+  006c: const-string                 v0, "Vn3kj4pUblROi2S+QfRRL9nhsaO2uoHQg6+dpEtxdTE="
+  0070: invoke-virtual               v0, v2, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+  0076: move-result                  v2
+  0078: if-eqz                       v2, +003h
+  007c: goto                         +9h
+  007e: new-instance                 v2, Lcom/pairip/SignatureCheck$SignatureTamperedException;
+  0082: const-string                 v0, "Apk signature is invalid."
+  0086: invoke-direct                v2, v0, Lcom/pairip/SignatureCheck$SignatureTamperedException;-><init>(Ljava/lang/String;)V
+  008c: throw                        v2
+  008e: const-string                 v2, "SignatureCheck"
+  0092: const-string                 v0, "Signature check ok"
+  0096: invoke-static                v2, v0, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  009c: return-void                  
+DEX constants ko runtime observed values na samjhein. Native initialization pehle aata hai; runtime field state is jaanch se establish nahi hui.
+
+Is node ke baare mein poochhein
+wapasSEEDHA STATIC SABOOT
+Installer check hai, default OFF hai
+Local check flag true hone par install-source compare hota hai. System app pass; warna getInstallingPackageName ko com.android.vending se compare karta hai. False result seedha redirect nahi, service connection ki taraf jata hai.
+
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->initializeLicenseCheck()V
+  0000: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->licenseCheckState Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  0004: invoke-virtual               v0, Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;->ordinal()I
+  000a: move-result                  v0
+  000c: const/4                      v1, 0
+  000e: if-eqz                       v0, +01ah
+  0012: const/4                      v2, 1
+  0014: if-eq                        v0, v2, +00ah
+  0018: const/4                      v2, 4
+  001a: if-eq                        v0, v2, +003h
+  001e: return-void                  
+  0020: invoke-direct                v3, v1, Lcom/pairip/licensecheck/LicenseClient;->initiateFreshLicensingServiceConnection(Z)V
+  0026: return-void                  
+  0028: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->responsePayload Landroid/os/Bundle;
+  002c: sget-object                  v1, Lcom/pairip/licensecheck/LicenseClient;->packageName Ljava/lang/String;
+  0030: invoke-static                v0, v1, Lcom/pairip/licensecheck/LicenseResponseHelper;->validateResponse(Landroid/os/Bundle; Ljava/lang/String;)V
+  0036: return-void                  
+  0038: move-exception               v0
+  003a: invoke-direct                v3, v0, Lcom/pairip/licensecheck/LicenseClient;->handleError(Lcom/pairip/licensecheck/LicenseCheckException;)V
+  0040: return-void                  
+  0042: sget-boolean                 v0, Lcom/pairip/licensecheck/LicenseClient;->localCheckEnabled Z
+  0046: if-eqz                       v0, +011h
+  004a: sget-boolean                 v0, Lcom/pairip/licensecheck/LicenseClient;->customTrialEndTriggered Z
+  004e: if-nez                       v0, +00dh
+  0052: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->backgroundRunner Lcom/pairip/licensecheck/LicenseClient$ImmediateTaskExecutor;
+  0056: new-instance                 v1, Lcom/pairip/licensecheck/LicenseClient$$ExternalSyntheticLambda7;
+  005a: invoke-direct                v1, v3, Lcom/pairip/licensecheck/LicenseClient$$ExternalSyntheticLambda7;-><init>(Lcom/pairip/licensecheck/LicenseClient;)V
+  0060: invoke-interface             v0, v1, Lcom/pairip/licensecheck/LicenseClient$ImmediateTaskExecutor;->run(Ljava/lang/Runnable;)V
+  0066: return-void                  
+  0068: invoke-direct                v3, v1, Lcom/pairip/licensecheck/LicenseClient;->initiateFreshLicensingServiceConnection(Z)V
+  006e: return-void                  
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->performLocalInstallerCheck()Z
+  0000: const-string                 v0, "LicenseClient"
+  0004: const/4                      v1, 0
+  0006: sget                         v2, Landroid/os/Build$VERSION;->SDK_INT I
+  000a: const/16                     v3, 30
+  000e: if-ge                        v2, v3, +008h
+  0012: const-string                 v2, "Local install check bypassed due to old SDK version."
+  0016: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  001c: return                       v1
+  001e: iget-object                  v2, v6, Lcom/pairip/licensecheck/LicenseClient;->context Landroid/content/Context;
+  0022: invoke-virtual               v2, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
+  0028: move-result-object           v2
+  002a: if-nez                       v2, +008h
+  002e: const-string                 v2, "Local install check bypassed due to package manager not found."
+  0032: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  0038: return                       v1
+  003a: sget-object                  v3, Lcom/pairip/licensecheck/LicenseClient;->packageName Ljava/lang/String;
+  003e: invoke-virtual               v2, v3, v1, Landroid/content/pm/PackageManager;->getPackageInfo(Ljava/lang/String; I)Landroid/content/pm/PackageInfo;
+  0044: move-result-object           v3
+  0046: if-eqz                       v3, +03fh
+  004a: iget-object                  v4, v3, Landroid/content/pm/PackageInfo;->applicationInfo Landroid/content/pm/ApplicationInfo;
+  004e: if-nez                       v4, +003h
+  0052: goto                         +39h
+  0054: iget-object                  v3, v3, Landroid/content/pm/PackageInfo;->applicationInfo Landroid/content/pm/ApplicationInfo;
+  0058: iget                         v3, v3, Landroid/content/pm/ApplicationInfo;->flags I
+  005c: and-int/lit8                 v4, v3, 1
+  0060: const/4                      v5, 1
+  0062: if-nez                       v4, +02bh
+  0066: and-int/lit16                v3, v3, 128
+  006a: if-eqz                       v3, +003h
+  006e: goto                         +25h
+  0070: sget-object                  v3, Lcom/pairip/licensecheck/LicenseClient;->packageName Ljava/lang/String;
+  0074: invoke-virtual               v2, v3, Landroid/content/pm/PackageManager;->getInstallSourceInfo(Ljava/lang/String;)Landroid/content/pm/InstallSourceInfo;
+  007a: move-result-object           v2
+  007c: if-nez                       v2, +008h
+  0080: const-string                 v2, "Local install check bypassed due to install source info not found."
+  0084: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  008a: return                       v1
+  008c: invoke-virtual               v2, Landroid/content/pm/InstallSourceInfo;->getInstallingPackageName()Ljava/lang/String;
+  0092: move-result-object           v2
+  0094: if-eqz                       v2, +00ch
+  0098: const-string                 v3, "com.android.vending"
+  009c: invoke-virtual               v2, v3, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+  00a2: move-result                  v2
+  00a4: if-nez                       v2, +003h
+  00a8: goto                         +2h
+  00aa: return                       v5
+  00ac: const-string                 v2, "Local install check failed due to wrong installer."
+  00b0: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  00b6: return                       v1
+  00b8: const-string                 v2, "Local install check passed due to system app."
+  00bc: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  00c2: return                       v5
+  00c4: const-string                 v2, "Local install check bypassed due to app package info not found."
+  00c8: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  00ce: return                       v1
+  00d0: move-exception               v2
+  00d2: const-string                 v3, "Could not obtain package info for local installer check."
+  00d6: invoke-static                v0, v3, v2, Landroid/util/Log;->w(Ljava/lang/String; Ljava/lang/String; Ljava/lang/Throwable;)I
+  00dc: return                       v1
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->lambda$initializeLicenseCheck$1(Z)V
+  0000: if-eqz                       v2, +006h
+  0004: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;->LOCAL_CHECK_OK Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  0008: sput-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->licenseCheckState Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  000c: if-eqz                       v2, +008h
+  0010: sget-boolean                 v2, Lcom/pairip/licensecheck/LicenseClient;->backgroundLicensingServiceEnabled Z
+  0014: if-eqz                       v2, +004h
+  0018: const/4                      v2, 1
+  001a: goto                         +2h
+  001c: const/4                      v2, 0
+  001e: invoke-direct                v1, v2, Lcom/pairip/licensecheck/LicenseClient;->initiateFreshLicensingServiceConnection(Z)V
+  0024: return-void                  
+Firebase/ads/Crashlytics ke installer calls alag SDK evidence hain. Native code flags badalta hai ya nahi, unknown. Min SDK32 hone se old SDK<30 route normally reachable nahi.
+
+Is node ke baare mein poochhein
+wapasSEEDHA STATIC SABOOT
+Installer check hai, default OFF hai
+Local check flag true hone par install-source compare hota hai. System app pass; warna getInstallingPackageName ko com.android.vending se compare karta hai. False result seedha redirect nahi, service connection ki taraf jata hai.
+
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->initializeLicenseCheck()V
+  0000: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->licenseCheckState Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  0004: invoke-virtual               v0, Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;->ordinal()I
+  000a: move-result                  v0
+  000c: const/4                      v1, 0
+  000e: if-eqz                       v0, +01ah
+  0012: const/4                      v2, 1
+  0014: if-eq                        v0, v2, +00ah
+  0018: const/4                      v2, 4
+  001a: if-eq                        v0, v2, +003h
+  001e: return-void                  
+  0020: invoke-direct                v3, v1, Lcom/pairip/licensecheck/LicenseClient;->initiateFreshLicensingServiceConnection(Z)V
+  0026: return-void                  
+  0028: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->responsePayload Landroid/os/Bundle;
+  002c: sget-object                  v1, Lcom/pairip/licensecheck/LicenseClient;->packageName Ljava/lang/String;
+  0030: invoke-static                v0, v1, Lcom/pairip/licensecheck/LicenseResponseHelper;->validateResponse(Landroid/os/Bundle; Ljava/lang/String;)V
+  0036: return-void                  
+  0038: move-exception               v0
+  003a: invoke-direct                v3, v0, Lcom/pairip/licensecheck/LicenseClient;->handleError(Lcom/pairip/licensecheck/LicenseCheckException;)V
+  0040: return-void                  
+  0042: sget-boolean                 v0, Lcom/pairip/licensecheck/LicenseClient;->localCheckEnabled Z
+  0046: if-eqz                       v0, +011h
+  004a: sget-boolean                 v0, Lcom/pairip/licensecheck/LicenseClient;->customTrialEndTriggered Z
+  004e: if-nez                       v0, +00dh
+  0052: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->backgroundRunner Lcom/pairip/licensecheck/LicenseClient$ImmediateTaskExecutor;
+  0056: new-instance                 v1, Lcom/pairip/licensecheck/LicenseClient$$ExternalSyntheticLambda7;
+  005a: invoke-direct                v1, v3, Lcom/pairip/licensecheck/LicenseClient$$ExternalSyntheticLambda7;-><init>(Lcom/pairip/licensecheck/LicenseClient;)V
+  0060: invoke-interface             v0, v1, Lcom/pairip/licensecheck/LicenseClient$ImmediateTaskExecutor;->run(Ljava/lang/Runnable;)V
+  0066: return-void                  
+  0068: invoke-direct                v3, v1, Lcom/pairip/licensecheck/LicenseClient;->initiateFreshLicensingServiceConnection(Z)V
+  006e: return-void                  
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->performLocalInstallerCheck()Z
+  0000: const-string                 v0, "LicenseClient"
+  0004: const/4                      v1, 0
+  0006: sget                         v2, Landroid/os/Build$VERSION;->SDK_INT I
+  000a: const/16                     v3, 30
+  000e: if-ge                        v2, v3, +008h
+  0012: const-string                 v2, "Local install check bypassed due to old SDK version."
+  0016: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  001c: return                       v1
+  001e: iget-object                  v2, v6, Lcom/pairip/licensecheck/LicenseClient;->context Landroid/content/Context;
+  0022: invoke-virtual               v2, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
+  0028: move-result-object           v2
+  002a: if-nez                       v2, +008h
+  002e: const-string                 v2, "Local install check bypassed due to package manager not found."
+  0032: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  0038: return                       v1
+  003a: sget-object                  v3, Lcom/pairip/licensecheck/LicenseClient;->packageName Ljava/lang/String;
+  003e: invoke-virtual               v2, v3, v1, Landroid/content/pm/PackageManager;->getPackageInfo(Ljava/lang/String; I)Landroid/content/pm/PackageInfo;
+  0044: move-result-object           v3
+  0046: if-eqz                       v3, +03fh
+  004a: iget-object                  v4, v3, Landroid/content/pm/PackageInfo;->applicationInfo Landroid/content/pm/ApplicationInfo;
+  004e: if-nez                       v4, +003h
+  0052: goto                         +39h
+  0054: iget-object                  v3, v3, Landroid/content/pm/PackageInfo;->applicationInfo Landroid/content/pm/ApplicationInfo;
+  0058: iget                         v3, v3, Landroid/content/pm/ApplicationInfo;->flags I
+  005c: and-int/lit8                 v4, v3, 1
+  0060: const/4                      v5, 1
+  0062: if-nez                       v4, +02bh
+  0066: and-int/lit16                v3, v3, 128
+  006a: if-eqz                       v3, +003h
+  006e: goto                         +25h
+  0070: sget-object                  v3, Lcom/pairip/licensecheck/LicenseClient;->packageName Ljava/lang/String;
+  0074: invoke-virtual               v2, v3, Landroid/content/pm/PackageManager;->getInstallSourceInfo(Ljava/lang/String;)Landroid/content/pm/InstallSourceInfo;
+  007a: move-result-object           v2
+  007c: if-nez                       v2, +008h
+  0080: const-string                 v2, "Local install check bypassed due to install source info not found."
+  0084: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  008a: return                       v1
+  008c: invoke-virtual               v2, Landroid/content/pm/InstallSourceInfo;->getInstallingPackageName()Ljava/lang/String;
+  0092: move-result-object           v2
+  0094: if-eqz                       v2, +00ch
+  0098: const-string                 v3, "com.android.vending"
+  009c: invoke-virtual               v2, v3, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+  00a2: move-result                  v2
+  00a4: if-nez                       v2, +003h
+  00a8: goto                         +2h
+  00aa: return                       v5
+  00ac: const-string                 v2, "Local install check failed due to wrong installer."
+  00b0: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  00b6: return                       v1
+  00b8: const-string                 v2, "Local install check passed due to system app."
+  00bc: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  00c2: return                       v5
+  00c4: const-string                 v2, "Local install check bypassed due to app package info not found."
+  00c8: invoke-static                v0, v2, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  00ce: return                       v1
+  00d0: move-exception               v2
+  00d2: const-string                 v3, "Could not obtain package info for local installer check."
+  00d6: invoke-static                v0, v3, v2, Landroid/util/Log;->w(Ljava/lang/String; Ljava/lang/String; Ljava/lang/Throwable;)I
+  00dc: return                       v1
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->lambda$initializeLicenseCheck$1(Z)V
+  0000: if-eqz                       v2, +006h
+  0004: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;->LOCAL_CHECK_OK Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  0008: sput-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->licenseCheckState Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  000c: if-eqz                       v2, +008h
+  0010: sget-boolean                 v2, Lcom/pairip/licensecheck/LicenseClient;->backgroundLicensingServiceEnabled Z
+  0014: if-eqz                       v2, +004h
+  0018: const/4                      v2, 1
+  001a: goto                         +2h
+  001c: const/4                      v2, 0
+  001e: invoke-direct                v1, v2, Lcom/pairip/licensecheck/LicenseClient;->initiateFreshLicensingServiceConnection(Z)V
+  0024: return-void                  
+Firebase/ads/Crashlytics ke installer calls alag SDK evidence hain. Native code flags badalta hai ya nahi, unknown. Min SDK32 hone se old SDK<30 route normally reachable nahi.
+
+Is node ke baare mein poochhein
+wapasSEEDHA STATIC SABOOT
+Licensing service ko request
+ILicensingService bind hoti hai. Parcel mein package aur callback binder jata hai. Full license check transaction2 hai, auto-verified reporting transaction3 alag cheez hai.
+
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->bindToLicensingService(Z)V
+  0000: if-eqz                       v5, +005h
+  0004: const-string                 v0, "Connecting to the background licensing service..."
+  0008: goto                         +3h
+  000a: const-string                 v0, "Connecting to the main licensing service..."
+  000e: const-string                 v1, "LicenseClient"
+  0012: invoke-static                v1, v0, Landroid/util/Log;->d(Ljava/lang/String; Ljava/lang/String;)I
+  0018: if-eqz                       v5, +005h
+  001c: const-string                 v0, "com.android.vending.licensing.IBackgroundLicensingService"
+  0020: goto                         +3h
+  0022: const-string                 v0, "com.android.vending.licensing.ILicensingService"
+  0026: new-instance                 v1, Landroid/content/Intent;
+  002a: invoke-direct                v1, v0, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
+  0030: const-string                 v2, "com.android.vending"
+  0034: invoke-virtual               v1, v2, Landroid/content/Intent;->setPackage(Ljava/lang/String;)Landroid/content/Intent;
+  003a: move-result-object           v1
+  003c: invoke-virtual               v1, v0, Landroid/content/Intent;->setAction(Ljava/lang/String;)Landroid/content/Intent;
+  0042: move-result-object           v1
+  0044: iget-object                  v2, v4, Lcom/pairip/licensecheck/LicenseClient;->context Landroid/content/Context;
+  0048: const/4                      v3, 1
+  004a: invoke-virtual               v2, v1, v4, v3, Landroid/content/Context;->bindService(Landroid/content/Intent; Landroid/content/ServiceConnection; I)Z
+  0050: move-result                  v1
+  0052: if-nez                       v1, +010h
+  0056: new-instance                 v1, Lcom/pairip/licensecheck/LicenseCheckException;
+  005a: const-string                 v2, "Could not bind with the licensing service: "
+  005e: invoke-virtual               v2, v0, Ljava/lang/String;->concat(Ljava/lang/String;)Ljava/lang/String;
+[...] poora method evidence bundle mein
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->checkLicenseInternal(Landroid/os/IBinder;)V
+  0000: const-string                 v0, "Request to licensing service sent."
+  0004: if-nez                       v7, +00dh
+  0008: new-instance                 v7, Lcom/pairip/licensecheck/LicenseCheckException;
+  000c: const-string                 v0, "Received a null binder."
+  0010: invoke-direct                v7, v0, Lcom/pairip/licensecheck/LicenseCheckException;-><init>(Ljava/lang/String;)V
+  0016: invoke-direct                v6, v7, Lcom/pairip/licensecheck/LicenseClient;->retryOrThrow(Lcom/pairip/licensecheck/LicenseCheckException;)V
+  001c: return-void                  
+  001e: invoke-interface             v7, Landroid/os/IBinder;->getInterfaceDescriptor()Ljava/lang/String;
+  0024: move-result-object           v1
+  0026: const-string                 v2, "com.android.vending.licensing.IBackgroundLicensingService"
+  002a: invoke-virtual               v1, v2, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+  0030: move-result                  v1
+  0032: if-nez                       v1, +05dh
+  0036: const-string                 v1, "Sending request to licensing service..."
+  003a: const-string                 v2, "LicenseClient"
+  003e: invoke-static                v2, v1, Landroid/util/Log;->d(Ljava/lang/String; Ljava/lang/String;)I
+  0044: invoke-static                Landroid/os/Parcel;->obtain()Landroid/os/Parcel;
+  004a: move-result-object           v1
+  004c: invoke-static                Landroid/os/Parcel;->obtain()Landroid/os/Parcel;
+  0052: move-result-object           v3
+  0054: invoke-direct                v6, v1, v7, Lcom/pairip/licensecheck/LicenseClient;->populateInputDataForLicenseCheckV2(Landroid/os/Parcel; Landroid/os/IBinder;)V
+  005a: const/4                      v4, 2
+  005c: const/4                      v5, 0
+  005e: invoke-interface             v7, v4, v1, v3, v5, Landroid/os/IBinder;->transact(I Landroid/os/Parcel; Landroid/os/Parcel; I)Z
+  0064: move-result                  v7
+  0066: if-nez                       v7, +00ch
+  006a: new-instance                 v7, Lcom/pairip/licensecheck/LicenseCheckException;
+  006e: const-string                 v4, "Licensing service could not process request."
+  0072: invoke-direct                v7, v4, Lcom/pairip/licensecheck/LicenseCheckException;-><init>(Ljava/lang/String;)V
+[...] poora method evidence bundle mein
+Binder transaction number aur license response number ko mix na karein. Service ke server-side decision ka implementation APK mein nahi hai.
+
+Is node ke baare mein poochhein
+wapasSEEDHA STATIC SABOOT
+0 = license · 2 = paywall · 3 = error
+Status0 mein LICENSE_DATA ke JWS parts aur RSA signature validate hote hain. Status2 PAYWALL_INTENT ko aage deta hai. Status3 invalid package aur doosre status unexpected-response errors hain.
+
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->processResponse(I Landroid/os/Bundle;)V
+  0000: const/4                      v0, 3
+  0002: if-eq                        v4, v0, +04ah
+  0006: if-nez                       v4, +023h
+  000a: sget-object                  v4, Lcom/pairip/licensecheck/LicenseClient;->packageName Ljava/lang/String;
+  000e: invoke-static                v5, v4, Lcom/pairip/licensecheck/LicenseResponseHelper;->validateResponse(Landroid/os/Bundle; Ljava/lang/String;)V
+  0014: const-string                 v4, "LicenseClient"
+  0018: const-string                 v0, "License check succeeded."
+  001c: invoke-static                v4, v0, Landroid/util/Log;->i(Ljava/lang/String; Ljava/lang/String;)I
+  0022: sget-boolean                 v4, Lcom/pairip/licensecheck/LicenseClient;->repeatedCheckEnabled Z
+  0026: if-eqz                       v4, +007h
+  002a: invoke-static                v5, Lcom/pairip/licensecheck/LicenseResponseHelper;->getRepeatedCheckMetadata(Landroid/os/Bundle;)Lcom/pairip/licensecheck/RepeatedCheckMetadata;
+  0030: move-result-object           v4
+  0032: goto                         +2h
+  0034: const/4                      v4, 0
+  0036: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient;->mainThreadRunner Lcom/pairip/licensecheck/LicenseClient$ImmediateTaskExecutor;
+  003a: new-instance                 v1, Lcom/pairip/licensecheck/LicenseClient$$ExternalSyntheticLambda10;
+  003e: invoke-direct                v1, v3, v4, v5, Lcom/pairip/licensecheck/LicenseClient$$ExternalSyntheticLambda10;-><init>(Lcom/pairip/licensecheck/LicenseClient; Lcom/pairip/licensecheck/RepeatedCheckMetadata; Landroid/os/Bundle;)V
+  0044: invoke-interface             v0, v1, Lcom/pairip/licensecheck/LicenseClient$ImmediateTaskExecutor;->run(Ljava/lang/Runnable;)V
+  004a: return-void                  
+  004c: const/4                      v0, 2
+  004e: if-ne                        v4, v0, +00eh
+  0052: const-string                 v4, "PAYWALL_INTENT"
+  0056: invoke-virtual               v5, v4, Landroid/os/Bundle;->getParcelable(Ljava/lang/String;)Landroid/os/Parcelable;
+  005c: move-result-object           v4
+  005e: check-cast                   v4, Landroid/app/PendingIntent;
+  0062: invoke-direct                v3, v4, Lcom/pairip/licensecheck/LicenseClient;->startPaywallActivity(Landroid/app/PendingIntent;)V
+  0068: return-void                  
+  006a: new-instance                 v5, Lcom/pairip/licensecheck/LicenseCheckException;
+  006e: const-string                 v0, "Unexpected response code %d received."
+  0072: invoke-static                v4, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+  0078: move-result-object           v4
+  007a: const/4                      v1, 1
+  007c: new-array                    v1, v1, [Ljava/lang/Object;
+  0080: const/4                      v2, 0
+  0082: aput-object                  v4, v1, v2
+  0086: invoke-static                v0, v1, Ljava/lang/String;->format(Ljava/lang/String; [Ljava/lang/Object;)Ljava/lang/String;
+  008c: move-result-object           v4
+  008e: invoke-direct                v5, v4, Lcom/pairip/licensecheck/LicenseCheckException;-><init>(Ljava/lang/String;)V
+  0094: throw                        v5
+  0096: new-instance                 v4, Lcom/pairip/licensecheck/LicenseCheckException;
+  009a: const-string                 v5, "Request package name invalid."
+  009e: invoke-direct                v4, v5, Lcom/pairip/licensecheck/LicenseCheckException;-><init>(Ljava/lang/String;)V
+  00a4: throw                        v4
+  00a6: move-exception               v4
+  00a8: invoke-direct                v3, v4, Lcom/pairip/licensecheck/LicenseClient;->handleError(Lcom/pairip/licensecheck/LicenseCheckException;)V
+  00ae: return-void                  
+classes2.dex: Lcom/pairip/licensecheck/LicenseResponseHelper;->validateResponse(Landroid/os/Bundle; Ljava/lang/String;)V
+  0000: invoke-static                v5, Lcom/pairip/licensecheck/LicenseResponseHelper;->getJwsPartsForLicenseData(Landroid/os/Bundle;)[Ljava/lang/String;
+  0006: move-result-object           v5
+  0008: const/4                      v0, 0
+  000a: aget-object                  v1, v5, v0
+  000e: invoke-static                v1, Lcom/pairip/licensecheck/LicenseResponseHelper;->base64ToJson(Ljava/lang/String;)Lorg/json/JSONObject;
+  0014: move-result-object           v1
+  0016: const/4                      v2, 1
+  0018: aget-object                  v3, v5, v2
+  001c: invoke-static                v3, Lcom/pairip/licensecheck/LicenseResponseHelper;->base64ToJson(Ljava/lang/String;)Lorg/json/JSONObject;
+  0022: move-result-object           v3
+  0024: const/4                      v4, 2
+  0026: aget-object                  v4, v5, v4
+  002a: aget-object                  v0, v5, v0
+  002e: aget-object                  v5, v5, v2
+  0032: new-instance                 v2, Ljava/lang/StringBuilder;
+  0036: invoke-direct                v2, Ljava/lang/StringBuilder;-><init>()V
+  003c: invoke-virtual               v2, v0, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  0042: const-string                 v0, "."
+  0046: invoke-virtual               v2, v0, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  004c: invoke-virtual               v2, v5, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  0052: invoke-virtual               v2, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+  0058: move-result-object           v5
+  005a: const-string                 v0, "alg"
+  005e: invoke-virtual               v1, v0, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+  0064: move-result-object           v0
+  0066: const-string                 v1, "RS256"
+  006a: invoke-virtual               v0, v1, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+  0070: move-result                  v0
+  0072: if-eqz                       v0, +020h
+  0076: const-string                 v0, "SHA256withRSA"
+  007a: invoke-static                Lcom/pairip/licensecheck/LicenseResponseHelper;->getPublicKey()Ljava/security/PublicKey;
+  0080: move-result-object           v1
+  0082: invoke-static                v5, v4, v0, v1, Lcom/pairip/licensecheck/LicenseResponseHelper;->verifySignature(Ljava/lang/String; Ljava/lang/String; Ljava/lang/String; Ljava/security/PublicKey;)V
+  0088: const-string                 v5, "packageName"
+  008c: invoke-virtual               v3, v5, Lorg/json/JSONObject;->getString(Ljava/lang/String;)Ljava/lang/String;
+  0092: move-result-object           v5
+  0094: invoke-virtual               v5, v6, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+  009a: move-result                  v5
+  009c: if-eqz                       v5, +003h
+  00a0: return-void                  
+  00a2: new-instance                 v5, Lcom/pairip/licensecheck/LicenseCheckException;
+  00a6: const-string                 v6, "Package name doesn't match."
+  00aa: invoke-direct                v5, v6, Lcom/pairip/licensecheck/LicenseCheckException;-><init>(Ljava/lang/String;)V
+[...] poora method evidence bundle mein
+Status0 ko blindly accept nahi kiya jata. RS256 + SHA256withRSA + packageName validation visible hai.
+
+Is node ke baare mein poochhein
+wapasSEEDHA STATIC SABOOT
+PendingIntent send, phir app close
+PAYWALL_INTENT ko internal LicenseActivity mein paywallintent extra se bheja jata hai. Activity PendingIntent.send karti hai, phir closeApp. Android34+ mein background-start ActivityOptions hai.
+
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->startPaywallActivity(Landroid/app/PendingIntent;)V
+  0000: invoke-direct                v2, Lcom/pairip/licensecheck/LicenseClient;->createCloseAppIntentOrExitIfAppInBackground()Landroid/content/Intent;
+  0006: move-result-object           v0
+  0008: const-string                 v1, "paywallintent"
+  000c: invoke-virtual               v0, v1, v3, Landroid/content/Intent;->putExtra(Ljava/lang/String; Landroid/os/Parcelable;)Landroid/content/Intent;
+  0012: const-string                 v3, "activitytype"
+  0016: sget-object                  v1, Lcom/pairip/licensecheck/LicenseActivity$ActivityType;->PAYWALL Lcom/pairip/licensecheck/LicenseActivity$ActivityType;
+  001a: invoke-virtual               v0, v3, v1, Landroid/content/Intent;->putExtra(Ljava/lang/String; Ljava/io/Serializable;)Landroid/content/Intent;
+  0020: invoke-direct                v2, Lcom/pairip/licensecheck/LicenseClient;->scheduleAppShutdown()V
+  0026: iget-object                  v3, v2, Lcom/pairip/licensecheck/LicenseClient;->context Landroid/content/Context;
+  002a: invoke-virtual               v3, v0, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
+  0030: return-void                  
+classes2.dex: Lcom/pairip/licensecheck/LicenseActivity;->lambda$showPaywallAndCloseApp$0(Landroid/app/PendingIntent;)V
+  0000: sget                         v0, Landroid/os/Build$VERSION;->SDK_INT I
+  0004: const/16                     v1, 34
+  0008: if-lt                        v0, v1, +013h
+  000c: invoke-static                Landroid/app/ActivityOptions;->makeBasic()Landroid/app/ActivityOptions;
+  0012: move-result-object           v0
+  0014: const/4                      v1, 1
+  0016: invoke-virtual               v0, v1, Landroid/app/ActivityOptions;->setPendingIntentBackgroundActivityStartMode(I)Landroid/app/ActivityOptions;
+  001c: move-result-object           v0
+  001e: invoke-virtual               v0, Landroid/app/ActivityOptions;->toBundle()Landroid/os/Bundle;
+  0024: move-result-object           v0
+  0026: invoke-virtual               v3, v0, Landroid/app/PendingIntent;->send(Landroid/os/Bundle;)V
+  002c: goto                         +4h
+  002e: invoke-virtual               v3, Landroid/app/PendingIntent;->send()V
+  0034: invoke-direct                v2, Lcom/pairip/licensecheck/LicenseActivity;->closeApp()V
+  003a: return-void                  
+  003c: move-exception               v3
+  003e: const-string                 v0, "Paywall intent unexpectedly cancelled."
+  0042: invoke-direct                v2, v0, v3, Lcom/pairip/licensecheck/LicenseActivity;->logAndShowErrorDialog(Ljava/lang/String; Ljava/lang/Exception;)V
+  0048: return-void                  
+classes2.dex: Lcom/pairip/licensecheck/LicenseActivity;->closeApp()V
+  0000: sget-boolean                 v0, Lcom/pairip/licensecheck/LicenseClient;->gracefulShutdownEnabled Z
+  0004: if-eqz                       v0, +006h
+  0008: invoke-virtual               v1, Lcom/pairip/licensecheck/LicenseActivity;->closeAllTasks()V
+  000e: return-void                  
+  0010: invoke-virtual               v1, Lcom/pairip/licensecheck/LicenseActivity;->exitApp()V
+  0016: return-void                  
+PairIP mein hardcoded market://details redirect ka evidence nahi. PendingIntent ki destination remote Play service se aati hai, isliye exact screen text aur URI static file se prove nahi.
+
+Is node ke baare mein poochhein
+Har code offset hexadecimal byte offset hai, method ke shuru se. Static reachability actual device behavior ki guarantee nahi hai.
+wapasSEEDHA STATIC SABOOT
+Something went wrong dialog
+Bind/response validation errors retry/handleError se ERROR_DIALOG mein ja sakte hain. FULL_CHECK_OK state mein handleError return kar sakta hai. Dialog non-cancelable hai; Close se app band.
+
+classes2.dex: Lcom/pairip/licensecheck/LicenseActivity;->lambda$showErrorDialog$0()V
+  0000: new-instance                 v0, Landroid/app/AlertDialog$Builder;
+  0004: invoke-direct                v0, v3, Landroid/app/AlertDialog$Builder;-><init>(Landroid/content/Context;)V
+  000a: const-string                 v1, "Something went wrong"
+  000e: invoke-virtual               v0, v1, Landroid/app/AlertDialog$Builder;->setTitle(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+  0014: move-result-object           v0
+  0016: const-string                 v1, "Check that Google Play is enabled on your device and that you're using an up-to-date version before opening the app. If the problem persists try reinstalling the app."
+  001a: invoke-virtual               v0, v1, Landroid/app/AlertDialog$Builder;->setMessage(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;
+  0020: move-result-object           v0
+  0022: const-string                 v1, "Close"
+  0026: new-instance                 v2, Lcom/pairip/licensecheck/LicenseActivity$$ExternalSyntheticLambda2;
+  002a: invoke-direct                v2, v3, Lcom/pairip/licensecheck/LicenseActivity$$ExternalSyntheticLambda2;-><init>(Lcom/pairip/licensecheck/LicenseActivity;)V
+  0030: invoke-virtual               v0, v1, v2, Landroid/app/AlertDialog$Builder;->setPositiveButton(Ljava/lang/CharSequence; Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;
+  0036: move-result-object           v0
+  0038: const/4                      v1, 0
+  003a: invoke-virtual               v0, v1, Landroid/app/AlertDialog$Builder;->setCancelable(Z)Landroid/app/AlertDialog$Builder;
+  0040: move-result-object           v0
+  0042: invoke-virtual               v0, Landroid/app/AlertDialog$Builder;->show()Landroid/app/AlertDialog;
+  0048: return-void                  
+  004a: move-exception               v0
+[...] poora method evidence bundle mein
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->lambda$handleError$0(Lcom/pairip/licensecheck/LicenseCheckException;)V
+  0000: invoke-static                v3, Landroid/util/Log;->getStackTraceString(Ljava/lang/Throwable;)Ljava/lang/String;
+  0006: move-result-object           v3
+  0008: new-instance                 v0, Ljava/lang/StringBuilder;
+  000c: const-string                 v1, "Error while checking license: "
+  0010: invoke-direct                v0, v1, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
+  0016: invoke-virtual               v0, v3, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  001c: invoke-virtual               v0, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+  0022: move-result-object           v3
+  0024: const-string                 v0, "LicenseClient"
+  0028: invoke-static                v0, v3, Landroid/util/Log;->e(Ljava/lang/String; Ljava/lang/String;)I
+  002e: sget-object                  v3, Lcom/pairip/licensecheck/LicenseClient;->licenseCheckState Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  0032: sget-object                  v0, Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;->FULL_CHECK_OK Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;
+  0036: invoke-virtual               v3, v0, Lcom/pairip/licensecheck/LicenseClient$LicenseCheckState;->equals(Ljava/lang/Object;)Z
+  003c: move-result                  v3
+  003e: if-eqz                       v3, +003h
+  0042: return-void                  
+  0044: invoke-direct                v2, Lcom/pairip/licensecheck/LicenseClient;->startErrorDialogActivity()V
+  004a: return-void                  
+classes2.dex: Lcom/pairip/licensecheck/LicenseClient;->scheduleAppShutdown()V
+  0000: sget-boolean                 v0, Lcom/pairip/licensecheck/LicenseClient;->eventualShutdownEnabled Z
+  0004: if-eqz                       v0, +00bh
+  0008: iget-object                  v0, v4, Lcom/pairip/licensecheck/LicenseClient;->delayedTaskExecutor Lcom/pairip/licensecheck/LicenseClient$DelayedTaskExecutor;
+  000c: sget-object                  v1, Lcom/pairip/licensecheck/LicenseClient;->exitAction Ljava/lang/Runnable;
+  0010: const-wide/16                v2, 30000
+  0014: invoke-interface             v0, v1, v2, v3, Lcom/pairip/licensecheck/LicenseClient$DelayedTaskExecutor;->schedule(Ljava/lang/Runnable; J)V
+  001a: return-void                  
+Generic error-dialog aur Play Store paywall alag UI routes hain. Har failure ko Play Store redirect kehna galat hai.
+
+Is node ke baare mein poochhein
+Har code offset hexadecimal byte offset hai, method ke shuru se. Static reachability actual device behavior ki guarantee nahi hai.
+Manifest mein declared raaste
+Declaration aur runtime pahunch alag cheezein hain. Launcher, Application aur LicenseActivity ko yahan alag samjhein.
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="245" android:versionName="2.10.2" android:compileSdkVersion="36" android:compileSdkVersionCodename="16" package="com.splendapps.checkmate" platformBuildVersionCode="36" platformBuildVersionName="16">
+  <uses-sdk android:minSdkVersion="32" android:targetSdkVersion="36"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+  <uses-permission android:name="com.android.vending.BILLING"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.TTS_SERVICE"/>
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.VIEW"/>
+      <category android:name="android.intent.category.BROWSABLE"/>
+      <data android:scheme="https"/>
+    </intent>
+    <intent>
+      <action android:name="android.support.customtabs.action.CustomTabsService"/>
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.INSERT"/>
+      <data android:mimeType="vnd.android.cursor.dir/event"/>
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.VIEW"/>
+      <data android:scheme="sms"/>
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.DIAL"/>
+      <data android:path="tel:"/>
+    </intent>
+    <package android:name="com.android.vending"/>
+    <package android:name="com.facebook.katana"/>
+    <intent>
+      <action android:name="com.android.vending.billing.InAppBillingService.BIND"/>
+    </intent>
+    <intent>
+      <action android:name="com.google.android.apps.play.billingtestcompanion.BillingOverrideService.BIND"/>
+    </intent>
+  </queries>
+  <uses-permission android:name="android.permission.READ_BASIC_PHONE_STATE"/>
+  <uses-permission android:name="android.permission.ACCESS_ADSERVICES_TOPICS"/>
+  <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID"/>
+  <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION"/>
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+  <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"/>
+  <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.ACCESS_ADSERVICES_CUSTOM_AUDIENCE"/>
+  <permission android:name="com.splendapps.checkmate.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="0x00000002"/>
+  <uses-permission android:name="com.splendapps.checkmate.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"/>
+  <application android:theme="@7F14031C" android:label="@7F130073" android:icon="@7F100000" android:name="com.pairip.application.Application" android:allowBackup="false" android:hardwareAccelerated="true" android:largeHeap="true" android:supportsRtl="true" android:extractNativeLibs="false" android:appCategory="0" android:appComponentFactory="androidx.core.app.CoreComponentFactory">
+    <meta-data android:name="com.google.android.gms.version" android:value="@7F0B000B"/>
+    <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-7242113140192604~5581889655"/>
+    <activity android:name="com.splendapps.checkmate.activity.MainActivity" android:exported="true" android:launchMode="1">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+    <activity android:name="com.splendapps.checkmate.activity.LoginActivity" android:launchMode="2"/>
+    <activity android:label="" android:name="com.splendapps.checkmate.activity.GameComputerActivity" android:launchMode="1" android:parentActivityName="com.splendapps.checkmate.activity.MainActivity"/>
+    <activity android:label="@7F1302B2" android:name="com.splendapps.checkmate.activity.SettingsActivity" android:launchMode="2" android:parentActivityName="com.splendapps.checkmate.activity.MainActivity"/>
+    <activity android:label="@7F130272" android:name="com.splendapps.checkmate.activity.FriendsActivity" android:exported="true" android:launchMode="2" android:parentActivityName="com.splendapps.checkmate.activity.MainActivity">
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="https" android:host="checkmate.splendapps.com" android:pathPattern="/player/.*"/>
+      </intent-filter>
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="http" android:host="checkmate.splendapps.com" android:pathPattern="/player/.*"/>
+      </intent-filter>
+    </activity>
+    <activity android:label="" android:name="com.splendapps.checkmate.activity.GameOnlineActivity" android:launchMode="1" android:windowSoftInputMode="0x00000030" android:parentActivityName="com.splendapps.checkmate.activity.MainActivity"/>
+    <activity android:theme="@7F14031F" android:name="com.splendapps.checkmate.activity.GameRequestActivity" android:launchMode="2"/>
+    <activity android:theme="@7F14031F" android:name="com.splendapps.checkmate.activity.NotificationActivity" android:launchMode="2"/>
+    <activity android:name="com.splendapps.checkmate.activity.GameMatchmakingActivity" android:launchMode="2"/>
+    <activity android:name="com.splendapps.checkmate.activity.StreakActivity" android:launchMode="2"/>
+    <activity android:label="" android:name="com.splendapps.checkmate.activity.GameGuestActivity" android:launchMode="1" android:windowSoftInputMode="0x00000030" android:parentActivityName="com.splendapps.checkmate.activity.MainActivity"/>
+    <activity android:name="com.splendapps.checkmate.activity.PuzzlesActivity" android:launchMode="1" android:parentActivityName="com.splendapps.checkmate.activity.MainActivity"/>
+    <activity android:label="@7F130289" android:name="com.splendapps.checkmate.activity.RankingsActivity" android:launchMode="2" android:parentActivityName="com.splendapps.checkmate.activity.MainActivity"/>
+    <activity android:label="Monitor" android:name="com.splendapps.checkmate.activity.MonitorActivity" android:launchMode="2" android:parentActivityName="com.splendapps.checkmate.activity.SettingsActivity"/>
+    <service android:name="com.splendapps.checkmate.firebase.messaging.MyFirebaseMessagingService" android:exported="false">
+      <intent-filter>
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>
+    </service>
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@7F130106"/>
+    <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@7F130107"/>
+    <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@7F0801ED"/>
+    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@7F0603E3"/>
+    <provider android:name="androidx.core.content.FileProvider" android:exported="false" android:authorities="com.splendapps.checkmate" android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@7F160002"/>
+    </provider>
+    <activity android:theme="@7F14066E" android:label="@7F130034" android:name="com.facebook.FacebookActivity" android:configChanges="0x000005B0"/>
+    <activity android:name="com.facebook.CustomTabActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="@7F130108"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="fbconnect" android:host="cct.com.splendapps.checkmate"/>
+      </intent-filter>
+    </activity>
+    <service android:name="com.splendapps.checkmate.effects.MusicService"/>
+    <receiver android:name="com.splendapps.checkmate.app.CmBroadcastReceiver" android:enabled="true" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="com.splendapps.checkmate.intent.action.ALARM_STREAK"/>
+      </intent-filter>
+    </receiver>
+    <activity android:theme="@7F140184" android:label="" android:name="com.firebase.ui.auth.KickoffActivity" android:exported="false"/>
+    <activity android:theme="@7F140184" android:label="" android:name="com.firebase.ui.auth.ui.idp.SingleSignInActivity" android:exported="false"/>
+    <activity android:theme="@7F140184" android:label="" android:name="com.firebase.ui.auth.ui.credentials.CredentialSaveActivity" android:exported="false"/>
+    <activity android:label="@7F130162" android:name="com.firebase.ui.auth.ui.email.RecoverPasswordActivity" android:exported="false" android:windowSoftInputMode="0x00000010"/>
+    <activity android:label="@7F130153" android:name="com.firebase.ui.auth.ui.email.EmailActivity" android:exported="false" android:windowSoftInputMode="0x00000010"/>
+    <activity android:label="@7F13015B" android:name="com.firebase.ui.auth.ui.phone.PhoneActivity" android:exported="false" android:windowSoftInputMode="0x00000015"/>
+    <activity android:label="@7F130164" android:name="com.firebase.ui.auth.ui.idp.WelcomeBackIdpPrompt" android:exported="false" android:windowSoftInputMode="0x00000010"/>
+    <activity android:label="@7F130165" android:name="com.firebase.ui.auth.ui.email.WelcomeBackPasswordPrompt" android:exported="false" android:windowSoftInputMode="0x00000010"/>
+    <activity android:label="@7F130165" android:name="com.firebase.ui.auth.ui.email.WelcomeBackEmailLinkPrompt" android:exported="false" android:windowSoftInputMode="0x00000010"/>
+    <activity android:theme="@7F140184" android:label="" android:name="com.firebase.ui.auth.ui.email.EmailLinkCatcherActivity" android:exported="false" android:windowSoftInputMode="0x00000010"/>
+    <activity android:label="@7F130153" android:name="com.firebase.ui.auth.ui.email.EmailLinkErrorRecoveryActivity" android:exported="false" android:windowSoftInputMode="0x00000010"/>
+    <activity android:label="@7F13011B" android:name="com.firebase.ui.auth.ui.idp.AuthMethodPickerActivity" android:exported="false"/>
+    <provider android:name="com.firebase.ui.auth.data.client.AuthUiInitProvider" android:exported="false" android:authorities="com.splendapps.checkmate.authuiinitprovider" android:initOrder="90"/>
+    <activity android:theme="@7F140326" android:name="com.google.android.libraries.ads.mobile.sdk.common.AdActivity" android:exported="false" android:configChanges="0x00000FB0"/>
+    <activity android:theme="@7F140328" android:name="com.google.android.play.core.hsdp.service.HsdpShimActivity" android:exported="false" android:excludeFromRecents="true" android:launchMode="1" android:configChanges="0x000005A0"/>
+    <activity android:name="com.facebook.CustomTabMainActivity"/>
+    <provider android:name="androidx.startup.InitializationProvider" android:exported="false" android:authorities="com.splendapps.checkmate.androidx-startup">
+      <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
+      <meta-data android:name="androidx.work.WorkManagerInitializer" android:value="androidx.startup"/>
+      <meta-data android:name="androidx.lifecycle.ProcessLifecycleInitializer" android:value="androidx.startup"/>
+      <meta-data android:name="androidx.profileinstaller.ProfileInstallerInitializer" android:value="androidx.startup"/>
+    </provider>
+    <activity android:theme="@android:01030010" android:name="com.google.firebase.auth.internal.GenericIdpActivity" android:exported="true" android:excludeFromRecents="true" android:launchMode="2">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="genericidp" android:host="firebase.auth" android:path="/"/>
+      </intent-filter>
+    </activity>
+    <activity android:theme="@android:01030010" android:name="com.google.firebase.auth.internal.RecaptchaActivity" android:exported="true" android:excludeFromRecents="true" android:launchMode="2">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="recaptcha" android:host="firebase.auth" android:path="/"/>
+      </intent-filter>
+    </activity>
+    <service android:name="com.google.firebase.components.ComponentDiscoveryService" android:exported="false" android:directBootAware="true">
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.firestore.FirebaseFirestoreKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.functions.FirebaseFunctionsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.functions.FunctionsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.crashlytics.FirebaseCrashlyticsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.storage.FirebaseStorageKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.storage.StorageRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.sessions.FirebaseSessionsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.appcheck.FirebaseAppCheckKtxRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.appcheck.FirebaseAppCheckRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+    </service>
+    <receiver android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver" android:permission="com.google.android.c2dm.permission.SEND" android:exported="true">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+      </intent-filter>
+      <meta-data android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED" android:value="true"/>
+    </receiver>
+    <service android:name="com.google.firebase.messaging.FirebaseMessagingService" android:exported="false" android:directBootAware="true">
+      <intent-filter android:priority="-500">
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>
+    </service>
+    <receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver" android:enabled="true" android:exported="false"/>
+    <service android:name="com.google.android.gms.measurement.AppMeasurementService" android:enabled="true" android:exported="false"/>
+    <service android:name="com.google.android.gms.measurement.AppMeasurementJobService" android:permission="android.permission.BIND_JOB_SERVICE" android:enabled="true" android:exported="false"/>
+    <meta-data android:name="com.google.android.play.billingclient.version" android:value="9.1.0"/>
+    <activity android:theme="@android:01030010" android:name="com.android.billingclient.api.ProxyBillingActivity" android:exported="false" android:configChanges="0x000005B0"/>
+    <activity android:theme="@android:01030010" android:name="com.android.billingclient.api.ProxyBillingActivityV2" android:exported="false" android:configChanges="0x000005B0"/>
+    <activity android:theme="@android:01030010" android:name="com.facebook.ads.AudienceNetworkActivity" android:exported="false" android:configChanges="0x00000DA0"/>
+    <provider android:name="com.facebook.ads.AudienceNetworkContentProvider" android:exported="false" android:authorities="com.splendapps.checkmate.AudienceNetworkContentProvider"/>
+    <service android:name="com.google.firebase.sessions.SessionLifecycleService" android:enabled="false" android:exported="false"/>
+    <provider android:name="com.google.firebase.provider.FirebaseInitProvider" android:exported="false" android:authorities="com.splendapps.checkmate.firebaseinitprovider" android:initOrder="100" android:directBootAware="true"/>
+    <service android:name="androidx.credentials.playservices.CredentialProviderMetadataHolder" android:enabled="true" android:exported="false">
+      <meta-data android:name="androidx.credentials.CREDENTIAL_PROVIDER_KEY" android:value="androidx.credentials.playservices.CredentialProviderPlayServicesImpl"/>
+    </service>
+    <activity android:theme="@7F140327" android:name="androidx.credentials.playservices.HiddenActivity" android:enabled="true" android:exported="false" android:configChanges="0x000005A0" android:fitsSystemWindows="true"/>
+    <activity android:theme="@android:01030010" android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity" android:exported="false" android:excludeFromRecents="true"/>
+    <service android:name="com.google.android.gms.auth.api.signin.RevocationBoundService" android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION" android:exported="true" android:visibleToInstantApps="true"/>
+    <activity android:theme="@android:01030010" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:exported="false"/>
+    <service android:name="androidx.work.impl.background.systemalarm.SystemAlarmService" android:enabled="@7F050002" android:exported="false" android:directBootAware="false"/>
+    <service android:name="androidx.work.impl.background.systemjob.SystemJobService" android:permission="android.permission.BIND_JOB_SERVICE" android:enabled="@7F050004" android:exported="true" android:directBootAware="false"/>
+    <service android:name="androidx.work.impl.foreground.SystemForegroundService" android:enabled="@7F050003" android:exported="false" android:directBootAware="false"/>
+    <receiver android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver" android:enabled="true" android:exported="false" android:directBootAware="false"/>
+    <receiver android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy" android:enabled="false" android:exported="false" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+        <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy" android:enabled="false" android:exported="false" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="android.intent.action.BATTERY_OKAY"/>
+        <action android:name="android.intent.action.BATTERY_LOW"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy" android:enabled="false" android:exported="false" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="android.intent.action.DEVICE_STORAGE_LOW"/>
+        <action android:name="android.intent.action.DEVICE_STORAGE_OK"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy" android:enabled="false" android:exported="false" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver" android:enabled="false" android:exported="false" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+        <action android:name="android.intent.action.TIME_SET"/>
+        <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver" android:enabled="@7F050002" android:exported="false" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver" android:permission="android.permission.DUMP" android:enabled="true" android:exported="true" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS"/>
+      </intent-filter>
+    </receiver>
+    <provider android:name="com.facebook.internal.FacebookInitProvider" android:exported="false" android:authorities="com.splendapps.checkmate.FacebookInitProvider"/>
+    <receiver android:name="com.facebook.CurrentAccessTokenExpirationBroadcastReceiver" android:exported="false">
+      <intent-filter>
+        <action android:name="com.facebook.sdk.ACTION_CURRENT_ACCESS_TOKEN_CHANGED"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="com.facebook.AuthenticationTokenManager$CurrentAuthenticationTokenChangedBroadcastReceiver" android:exported="false">
+      <intent-filter>
+        <action android:name="com.facebook.sdk.ACTION_CURRENT_AUTHENTICATION_TOKEN_CHANGED"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="androidx.profileinstaller.ProfileInstallReceiver" android:permission="android.permission.DUMP" android:enabled="true" android:exported="true" android:directBootAware="false">
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.SKIP_FILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.SAVE_PROFILE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
+      </intent-filter>
+    </receiver>
+    <uses-library android:name="android.ext.adservices" android:required="false"/>
+    <provider android:name="com.squareup.picasso.PicassoProvider" android:exported="false" android:authorities="com.splendapps.checkmate.com.squareup.picasso"/>
+    <service android:name="androidx.room.MultiInstanceInvalidationService" android:exported="false" android:directBootAware="true"/>
+    <service android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery" android:exported="false">
+      <meta-data android:name="backend:com.google.android.datatransport.cct.CctBackendFactory" android:value="cct"/>
+    </service>
+    <service android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService" android:permission="android.permission.BIND_JOB_SERVICE" android:exported="false"/>
+    <receiver android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver" android:exported="false"/>
+    <activity android:theme="@7F1403CC" android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" android:exported="false" android:stateNotNeeded="true"/>
+    <activity android:name="com.pairip.licensecheck.LicenseActivity" android:exported="false"/>
+  </application>
+  <uses-permission android:name="com.android.vending.CHECK_LICENSE"/>
+</manifest>
+Har code offset hexadecimal byte offset hai, method ke shuru se. Static reachability actual device behavior ki guarantee nahi hai.
+Jo saboot seedha kehta hai
+Actual app: com.splendapps.checkmate, version 2.10.2 (245). Original SHA-256 neeche diya hai.
+
+PairIP actual entrypoint hai: Application.attachBaseContext se signer aur license checks hain. Hilt superclass se independent native startup bhi bachta hai.
+
+Installer flag default false hai: getInstallSourceInfo wala code actual hai, lekin usko har startup ka mandatory block kehna justified nahi.
+
+Redirect handoff: status2 ka PendingIntent Play service se aata hai. Rating/settings ke market:// URLs ko PairIP route ke saath merge na karein.
+
+Jahan knowledge rukti hai
+Native executeVM, encrypted/program assets, dynamic reflection targets, server-side license policy aur PendingIntent destination reconstruct nahi hue. Isliye all traps ka claim nahi hai.
+
+Experiment: signed static-only experiment created
+
+Rebuild, archive CRC, cryptographic APK signature aur phone runtime behavior chaar alag checks hain. Runtime phone test nahi kiya gaya.
+
+Original SHA-256
+8e8a91cd394fb24120cf9b9099519f3c297a1df57860712164aa5ec60807e4b1
+Poora Roman Hindi report aur disassembly evidence bundle chat ke artifact links se khulta hai.
+
+Doosra experiment
+Original native startup preserved. Sirf classes2.dex mein targeted app-side changes hue. Archive aur APK signature verified. Native self-check/ART launch aur game-screen test remaining hain. Isko working/fixed nahi kaha gaya.
+
+
+
+
+yeh le bro pure app ka skull ab bata ksse bypass hoga
